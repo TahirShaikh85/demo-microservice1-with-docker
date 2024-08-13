@@ -8,5 +8,5 @@ app.route('/',(req,res)=>{
 });
 
 app.listen(process.env.PORT,()=>{
-    console.log(`Server running on http://localhost:${process.env.PORT} made by - ${process.env.DEVELOPER}`);
+    console.log(`Server is running on http://localhost:${process.env.PORT} made by - ${process.env.DEVELOPER}`);
 })
