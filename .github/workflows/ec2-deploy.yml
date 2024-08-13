@@ -1,1 +1,32 @@
-ss
+name: Deploy Nodejs Application
+
+on:
+  push: 
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Create .env file
+        run: echo "DEVELOPER=${{ secrets.DEVELOPER }}" >> .env
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}       
+      - name: Build docker image
+        run: docker build -t tahir85/docker-ci-cd .  
+      - name: Publish image to docker hub
+        run: docker push tahir85/docker-ci-cd:latest
+        
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull tahir85/docker-ci-cd:latest
+      - name: Delete old container
+        run: docker rm -f docker-ci-cd-container 
+      - name: Run docker container
+        run: docker run -d -p 80:80 --name docker-ci-cd-container tahir85/docker-ci-cd
